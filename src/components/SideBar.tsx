@@ -1,33 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Button } from './Button';
+import { memo, useEffect, useMemo, useState } from "react";
+import { Button } from "./Button";
 
-import { api } from '../services/api';
+import { api } from "../services/api";
 
-import GenreResponseProps from '../interfaces/GenreResponseProps';
+import GenreResponseProps from "../interfaces/GenreResponseProps";
 
 interface SideBarProps {
-  selectedGenreId: number,
-  handleClickButton: (id: number) => void,
+  genres: GenreResponseProps[];
+  selectedGenreId: number;
+  handleClickButton: (id: number) => void;
 }
 
-export const SideBar = ({
+const SideBarComponent = ({
+  genres,
   selectedGenreId,
   handleClickButton,
-} : SideBarProps) => {
-  const [genres, setGenres] = useState<GenreResponseProps[]>([]);
-
-  useEffect(() => {
-    api.get<GenreResponseProps[]>('genres').then(response => {
-      setGenres(response.data);
-    });
-  }, []);
-
+}: SideBarProps) => {
   return (
     <nav className="sidebar">
-      <span>Watch<p>Me</p></span>
+      <span>
+        Watch<p>Me</p>
+      </span>
 
       <div className="buttons-container">
-        {genres.map(genre => (
+        {genres.map((genre) => (
           <Button
             key={String(genre.id)}
             title={genre.title}
@@ -39,4 +35,6 @@ export const SideBar = ({
       </div>
     </nav>
   );
-}
+};
+
+export const SideBar = memo(SideBarComponent);

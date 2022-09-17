@@ -1,41 +1,32 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
-import { MovieCard } from '../components/MovieCard';
+import { MovieCard } from "../components/MovieCard";
 
-import { api } from '../services/api';
+import { api } from "../services/api";
 
-import MovieProps from '../interfaces/MovieProps';
-import GenreResponseProps from '../interfaces/GenreResponseProps';
+import MovieProps from "../interfaces/MovieProps";
+import GenreResponseProps from "../interfaces/GenreResponseProps";
 
 interface ContentProps {
-  selectedGenreId: number
+  movies: MovieProps[];
+  selectedGenre: GenreResponseProps;
 }
 
-export const Content: React.FC<ContentProps> = ({
-  selectedGenreId
+const ContentComponent: React.FC<ContentProps> = ({
+  movies,
+  selectedGenre,
 }) => {
-  const [movies, setMovies] = useState<MovieProps[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState<GenreResponseProps>({} as GenreResponseProps);
-
-  useEffect(() => {
-    api.get<MovieProps[]>(`movies/?Genre_id=${selectedGenreId}`).then(response => {
-      setMovies(response.data);
-    });
-
-    api.get<GenreResponseProps>(`genres/${selectedGenreId}`).then(response => {
-      setSelectedGenre(response.data);
-    })
-  }, [selectedGenreId]);
-
   return (
     <div className="container">
       <header>
-        <span className="category">Categoria:<span> {selectedGenre.title}</span></span>
+        <span className="category">
+          Categoria:<span> {selectedGenre.title}</span>
+        </span>
       </header>
 
       <main>
         <div className="movies-list">
-          {movies.map(movie => (
+          {movies.map((movie) => (
             <MovieCard
               key={movie.imdbID}
               title={movie.Title}
@@ -48,4 +39,6 @@ export const Content: React.FC<ContentProps> = ({
       </main>
     </div>
   );
-}
+};
+
+export const Content = memo(ContentComponent);
